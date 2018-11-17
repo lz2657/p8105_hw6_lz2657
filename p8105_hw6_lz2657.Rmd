@@ -24,3 +24,12 @@ homicide_data =
 
 homicide_data
 ```
+
+Then create a city_state variable and a binary variable indicating whether the homicide is solved.
+
+```{r problem1_create_variable}
+homicide_data = homicide_data %>%
+  mutate(city_state = str_c(city, ", ", state)) %>%
+  mutate(solved = as.numeric(disposition != "Closed without arrest" & disposition != "Open/No arrest"))
+```
+
