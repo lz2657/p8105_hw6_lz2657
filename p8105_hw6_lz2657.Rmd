@@ -76,3 +76,19 @@ homocide_odds_cities = homicide_data %>%
 
 homocide_odds_cities
 ```
+
+Create a plot that shows the estimated ORs and CIs for each city. 
+
+```{r problem1_plot}
+homocide_odds_cities %>% 
+  mutate(city_state = fct_reorder(city_state, desc(odds_ratio))) %>%
+  ggplot(aes(x = city_state, y = odds_ratio, color = city_state)) + 
+    geom_point() +
+    geom_errorbar(aes(ymin = conf_low, ymax = conf_high, width = 0.2)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1), legend.position = "none") + 
+    labs(
+        title = "Adjusted Odds Ratios of Non-White to Whites for Solved Homicides",
+        x = "City, State",
+        y = "Adjusted Odds Ratio "
+      )
+```
