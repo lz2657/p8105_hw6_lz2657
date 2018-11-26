@@ -31,7 +31,7 @@ Now create a city_state variable and a binary variable indicating whether the ho
 homicide_data = homicide_data %>%
   mutate(city_state = str_c(city, ", ", state)) %>%
   mutate(solved = as.numeric(disposition != "Closed without arrest" & disposition != "Open/No arrest")) %>%
-  filter(city_state != "Dallas, TX" & city_state != "Phoenix, AZ" & city_state != "Kansas City, MO" & city_state != "Tulsa, AL") %>%
+  filter(city_state != "Dallas, TX" & city_state != "Phoenix, AZ" & city_state != "Kansas City, MO" & city_state != "Tulsa, AL" & city_state != "PA, 40.461945") %>%
   mutate(victim_race = ifelse(victim_race == "White", "white","non-white"),
          victim_race = fct_relevel(victim_race, "white"), 
          victim_age = as.numeric(victim_age))
@@ -49,4 +49,30 @@ baltimore_log %>%
   select(term, "adj odds ratio" = estimate, "CI: lower bound" = conf.low, 
            "CI: upper bound" = conf.high) %>% 
   knitr::kable(digits = 3)
+```
+
+Now run glm for each city, and extract the adjusted odds ratio and CI for solving homicides comparing non-white victims to white victims. 
+
+```{r problem1_glm_cities}
+logistic_function = function(df) {
+  glm_fit = glm(solved ~ victim_age + victim_sex + victim_race, 
+      data = df, family = binomial())
+  
+  glm_fit %>% 
+    broom::tidy() %>% 
+    mutate(odds_ratio = exp(estimate),
+           conf_low = exp(estimate - 1.96 * std.error), 
+           conf_high = exp(estimate + 1.96 * std.error))
+}
+
+homocide_odds_cities = homicide_data %>% 
+  group_by(city_state) %>%
+  nest() %>%
+  mutate(log_models = map(data, logistic_function)) %>%
+  select(-data) %>% 
+  unnest() %>% 
+  filter(term == "victim_racenon-white") %>% 
+  select(city_state, odds_ratio, conf_low, conf_high)
+
+homocide_odds_cities
 ```
