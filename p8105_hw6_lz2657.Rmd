@@ -25,11 +25,14 @@ homicide_data =
 homicide_data
 ```
 
-Then create a city_state variable and a binary variable indicating whether the homicide is solved.
+Now create a city_state variable and a binary variable indicating whether the homicide is solved, and then omit some cities. Also modifiy victim_race to have categories white and non-white, with white as the reference category and make sure that victim_age is numeric.
 
-```{r problem1_create_variable}
+```{r problem1_create_and_omit, warning=FALSE}
 homicide_data = homicide_data %>%
   mutate(city_state = str_c(city, ", ", state)) %>%
-  mutate(solved = as.numeric(disposition != "Closed without arrest" & disposition != "Open/No arrest"))
+  mutate(solved = as.numeric(disposition != "Closed without arrest" & disposition != "Open/No arrest")) %>%
+  filter(city_state != "Dallas, TX" & city_state != "Phoenix, AZ" & city_state != "Kansas City, MO" & city_state != "Tulsa, AL") %>%
+  mutate(victim_race = ifelse(victim_race == "White", "white","non-white"),
+         victim_race = fct_relevel(victim_race, "white"), 
+         victim_age = as.numeric(victim_age))
 ```
-
