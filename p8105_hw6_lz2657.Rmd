@@ -92,3 +92,22 @@ homocide_odds_cities %>%
         y = "Adjusted Odds Ratio "
       )
 ```
+
+## Problem 2
+
+First, load and clean the data for regression analysis.
+
+```{r problem2_load_clean}
+birth_data = read_csv(file = "data/birthweight.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(babysex = recode(babysex, `1` = "male", `2` = "female"),
+         frace = recode(frace,  `1` = "white", `2` = "black", `3` = "asian", 
+                        `4` = "puerto_rican", `8` = "other", `9` = "unknown"),
+         mrace = recode(mrace,  `1` = "white", `2` = "black", `3` = "asian", 
+                        `4` = "puerto_rican", `8` = "other" ),
+         smoken = as.integer(smoken)
+  )
+```
+
+There are no missing data in the dataset.
+
