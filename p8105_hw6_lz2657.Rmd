@@ -9,6 +9,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(purrr)
+library(modelr)
 ```
 
 ## Problem 1
@@ -111,3 +112,23 @@ birth_data = read_csv(file = "data/birthweight.csv") %>%
 
 There are no missing data in the dataset.
 
+Then propose a regression model for birthweight and describe the modeling process and show a plot of model residuals against fitted values.
+
+```{r problem2_regression}
+btw_reg = function(df) {
+  lm(bwt ~ bhead + blength + gaweeks, data = df)
+}
+
+btw_model = btw_reg(birth_data)
+  
+birth_data %>% 
+  add_predictions(btw_model) %>% 
+  add_residuals (btw_model) %>% 
+  ggplot(aes(x = pred, y = resid)) + 
+    geom_point(alpha = 0.2) +
+  labs(
+        title = "Residuals vs. Predicted Values",
+        x = "Predicted Birthweight",
+        y = "Residuals"
+      )
+```
